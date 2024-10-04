@@ -1,14 +1,46 @@
 const express = require('express');
+const mongoose = require('mongoose');
+const path = require('path');
+require('dotenv').config(); // Load environment variables from .env file
+
 const app = express();
-const port = 5000;
-const cors = require("cors");
 
-app.use(cors());
+// Connect to MongoDB using environment variables
+mongoose.connect(`mongodb://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@localhost:27017/${process.env.DB_NAME}`)
+    .then(() => console.log('Connected to MongoDB'))
+    .catch(err => console.log('Failed to connect to MongoDB', err));
 
-app.get('/api', (req, res) => {
-    res.send('Hello from Express!');
+// Define a schema and model for the profile
+const profileSchema = new mongoose.Schema({
+    name: String,
+    email: String,
+    interest: String,
+});
+const Profile = mongoose.model('Profile', profileSchema);
+
+// Middleware to parse JSON request bodies
+app.use(express.json());
+
+// Serve static files from the public directory
+app.use(express.static(path.join(__dirname, '..', 'public')));
+
+// Route to handle profile submissions
+app.post('/api/profile', async (req, res) => {
+    try {
+        const { name, email, interest } = req.body;
+
+        // Create and save a new profile
+        const newProfile = new Profile({ name, email, interest });
+        await newProfile.save();
+
+        res.status(200).json({ message: 'Profile saved successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error saving profile', error });
+    }
 });
 
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
+// Start the server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
 });
