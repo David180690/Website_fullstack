@@ -1,0 +1,32 @@
+name: Deploy Node Application
+
+on:
+  push:
+    branches:
+      - main
+      - stage
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16.x" # Use a compatible Node.js version
+
+      - name: Install Dependencies
+        working-directory: ./backend
+        run: npm install
+
+      - name: Build Application
+        working-directory: ./backend
+        run: npm run build # This runs your build script
+
+      - name: Start Application
+        working-directory: ./backend
+        run: npm start # This will run your application
