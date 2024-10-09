@@ -5,8 +5,9 @@ require('dotenv').config(); // Load environment variables from .env file
 
 const app = express();
 
-// Connect to MongoDB using environment variables
-mongoose.connect(`mongodb://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@localhost:27017/${process.env.DB_NAME}`)
+// Connect to MongoDB (no authentication)
+const mongoUri = `mongodb://mongo:27017/${process.env.DB_NAME}`; // Use the default MongoDB database without username and password
+mongoose.connect(mongoUri)
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.log('Failed to connect to MongoDB', err));
 
@@ -41,6 +42,6 @@ app.post('/api/profile', async (req, res) => {
 
 // Start the server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+app.listen(PORT,'0.0.0.0', () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
