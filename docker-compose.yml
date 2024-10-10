@@ -3,23 +3,7 @@ version: '3.3'
 services:
   app:
     build:
-      context: ./backend
+      context: .  # This assumes your Dockerfile is in the root directory
       dockerfile: Dockerfile
     ports:
-      - '5000:5000'
-    environment:
-      - DB_USERNAME=${DB_USERNAME}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=${DB_NAME}
-    depends_on:
-      - mongo
-
-  mongo:
-    image: mongo:latest
-    ports:
-      - '27017:27017'
-    volumes:
-      - mongo-data:/data/db
-
-volumes:
-  mongo-data:
+      - "5000:5000"  # Map host port 5000 to container port 5000
