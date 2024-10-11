@@ -1,8 +1,8 @@
 name: Deploy Node Application
 
 on:
-#  push:
-#    branches:
+  push:
+    branches:
 #      - main
 #      - stage
   workflow_dispatch:
