@@ -1,7 +1,7 @@
 name: docker_compose_up_runner
 
 on:
-  push:
+#  push:
 #    branches:
 #      - main
 #      - stage
