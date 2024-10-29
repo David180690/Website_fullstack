@@ -1,0 +1,21 @@
+name: Clean Up Docker Compose Environment
+
+on:
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Stop and Remove Docker Containers
+        run: |
+          docker-compose -f docker-compose.nginx.yml down --volumes --remove-orphans
+
+      - name: Confirm Cleanup
+        run: |
+          docker ps -a || echo "No containers found"
+          docker volume ls || echo "No volumes found"
