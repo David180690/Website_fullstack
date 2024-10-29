@@ -16,6 +16,7 @@ jobs:
 
       - name: Start Nginx Proxy Manager with Specific Compose File
         run: |
+          cd nginx_prox_manager_deploy
           docker-compose -f docker-compose.nginx.yml up -d --remove-orphans
           
       - name: Confirm Nginx Proxy Manager Deployment
