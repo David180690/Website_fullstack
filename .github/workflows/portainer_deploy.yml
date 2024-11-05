@@ -1,0 +1,25 @@
+name: portainer_deploy
+
+on:
+  workflow_dispatch:  # Allows manual trigger from the GitHub Actions UI
+
+jobs:
+  deploy-portainer:
+    runs-on: self-hosted  # Specify your self-hosted runner here
+
+    steps:
+      - name: Check if Portainer is already running
+        run: |
+          if [ "$(docker ps -q -f name=portainer)" ]; then
+            echo "Portainer is already running."
+          else
+            echo "Portainer is not running. Starting Portainer container..."
+            docker run -d \
+              --name portainer \
+              --restart=always \
+              -p 9000:9000 \
+              -p 8000:8000 \
+              -v /var/run/docker.sock:/var/run/docker.sock \
+              -v portainer_data:/data \
+              portainer/portainer-ce
+          fi
