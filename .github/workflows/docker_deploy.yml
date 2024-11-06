@@ -16,12 +16,14 @@ jobs:
         
       - name: Build and Push Docker Image
         run: |
-          # Navigate to the frontend folder
-          cd frontend  # Ensure we are in the frontend directory
-          
-          # Run docker-compose using the full path to the docker-compose.yml file in the root directory
-          docker-compose -f docker-compose.yml up -d --build  # Correct path to docker-compose.yml
+          # Ensure we're in the root directory, not the frontend directory
+          cd frontend  # Navigate to the frontend folder
+
+          # Run docker-compose from the correct location (assuming it's in the root directory)
+          docker-compose -f ../docker-compose.yml up -d --build  # Ensure the correct path to the docker-compose.yml file
 
       # Optionally clean up after deployment
       # - name: Clean up
       #   run: docker-compose -f ../docker-compose.yml down
+
+
