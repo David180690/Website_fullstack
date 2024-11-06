@@ -11,8 +11,5 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Navigate to Docker Compose directory
-        working-directory: /home/actions-runner/_work/Website-fullstack/Website-fullstack
-        run: |
-          # docker-compose down  # Optional: stop existing containers
-          docker-compose up -d  
+      - name: Run Docker Compose
+        run: docker-compose -f /home/actions-runner/_work/Website-fullstack/Website-fullstack/docker-compose.yml up -d
