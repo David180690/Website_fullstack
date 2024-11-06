@@ -1,4 +1,5 @@
 version: '3.3'
+
 services:
   app:
     build:
@@ -8,7 +9,8 @@ services:
       - "5000:5000"
     networks:
       - shared_network  # Use shared network
+    restart: unless-stopped  # Ensure container restarts if stopped
 
 networks:
   shared_network:
-    external: true  # Use external to keep it consistent
+    external: true  # Use external network

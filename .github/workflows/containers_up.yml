@@ -4,7 +4,7 @@ on:
   workflow_dispatch:  # Allows manual trigger from the GitHub Actions UI
 
 jobs:
-  deploy:
+  container_up:
     runs-on: self-hosted  # Specify your self-hosted runner here
 
     steps:
