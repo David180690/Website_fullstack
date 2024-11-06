@@ -1,15 +1,12 @@
 name: Deploy Node Application
 
 on:
-#  push:
-#    branches:
-#      - main
-#      - stage
   workflow_dispatch:
 
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: self-hosted  # Use self-hosted runner
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -19,7 +16,10 @@ jobs:
         
       - name: Build and Push Docker Image
         run: |
-          docker-compose -f docker-compose.yml up -d --build
+          # Navigate to the frontend folder and run Docker Compose
+          cd frontend  # Ensure we are in the frontend directory
+          docker-compose -f ../docker-compose.yml up -d --build  # Use the main docker-compose file
 
-#      - name: Clean up
-#       run: docker-compose -f docker-compose.yml down
+      # Optionally clean up after deployment
+      # - name: Clean up
+      #   run: docker-compose -f ../docker-compose.yml down
