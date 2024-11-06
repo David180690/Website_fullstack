@@ -1,4 +1,4 @@
-name: Deploy Nginx Proxy Manager with Docker Compose
+name: Deploy Nginx Proxy Manager
 
 on:
   workflow_dispatch:  # Allows manual trigger from GitHub UI
