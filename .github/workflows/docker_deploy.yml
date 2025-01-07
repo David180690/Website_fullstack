@@ -16,6 +16,7 @@ jobs:
         
       - name: Build and Push Docker Image
         run: |
+          # Run docker-compose from the root folder where docker-compose.yml is located
           docker-compose -f docker-compose.yml up -d --build  
 
       # Optionally clean up after deployment
