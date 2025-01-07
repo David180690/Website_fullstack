@@ -21,13 +21,13 @@ jobs:
             echo "shared_network already exists."
           fi
 
-      - name: Verify nginx_prox_manager folder exists
+      - name: Verify nginx_proxy_manager folder exists
         run: |
-          # Check if the nginx_prox_manager folder exists
-          if [ -d "/home/actions-runner/_work/Website_fullstack/Website_fullstack/nginx_prox_manager" ]; then
-            echo "nginx_prox_manager directory found"
+          # Check if the nginx_proxy_manager folder exists
+          if [ -d "/home/actions-runner/_work/Website_fullstack/Website_fullstack/nginx_proxy_manager" ]; then
+            echo "nginx_proxy_manager directory found"
           else
-            echo "nginx_prox_manager directory not found, please check repository structure"
+            echo "nginx_proxy_manager directory not found, please check repository structure"
             exit 1
           fi
 
@@ -36,7 +36,7 @@ jobs:
           # Start Nginx Proxy Manager only if it's not running
           if ! docker ps -f name=nginx-proxy-manager --format '{{.Names}}' | grep -q 'nginx-proxy-manager'; then
             echo "Nginx Proxy Manager is not running, starting it..."
-            cd /home/actions-runner/_work/Website_fullstack/Website_fullstack/nginx_prox_manager
+            cd /home/actions-runner/_work/Website_fullstack/Website_fullstack/nginx_proxy_manager
             docker-compose up -d  # Start the container in detached mode
           else
             echo "Nginx Proxy Manager is already running."
