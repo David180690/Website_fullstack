@@ -11,14 +11,36 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Check if Nginx Proxy Manager is running
+      - name: Check if shared_network exists and create it if necessary
         run: |
-          docker ps | grep jc21/nginx-proxy-manager || echo "Nginx Proxy Manager is not running"
+          # Check if the shared_network exists, if not create it
+          if ! docker network ls --filter name=shared_network --format '{{.Name}}' | grep -q 'shared_network'; then
+            echo "Creating shared_network..."
+            docker network create shared_network
+          else
+            echo "shared_network already exists."
+          fi
 
-      - name: Navigate to nginx_prox_manager folder and deploy Nginx Proxy Manager
+      - name: Verify nginx_prox_manager folder exists
         run: |
-          cd /home/actions-runner/_work/Website_fullstack/Website_fullstack/nginx_prox_manager
-          docker-compose up -d  # Start the container in detached mode
+          # Check if the nginx_prox_manager folder exists
+          if [ -d "/home/actions-runner/_work/Website_fullstack/Website_fullstack/nginx_prox_manager" ]; then
+            echo "nginx_prox_manager directory found"
+          else
+            echo "nginx_prox_manager directory not found, please check repository structure"
+            exit 1
+          fi
+
+      - name: Start Nginx Proxy Manager if not running
+        run: |
+          # Start Nginx Proxy Manager only if it's not running
+          if ! docker ps -f name=nginx-proxy-manager --format '{{.Names}}' | grep -q 'nginx-proxy-manager'; then
+            echo "Nginx Proxy Manager is not running, starting it..."
+            cd /home/actions-runner/_work/Website_fullstack/Website_fullstack/nginx_prox_manager
+            docker-compose up -d  # Start the container in detached mode
+          else
+            echo "Nginx Proxy Manager is already running."
+          fi
 
       - name: Verify Nginx Proxy Manager is running
         run: |
