@@ -1,0 +1,10 @@
+project-root/
+├── backend/
+│   ├── Dockerfile
+│   ├── docker-compose.yml
+│   └── server.js
+├── frontend/
+│   └── public/
+│       └── index.html
+└── .env
+

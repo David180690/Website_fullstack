@@ -1,46 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile Form</title>
 </head>
+
 <body>
     <h1>Submit Your Profile</h1>
-    <form id="profileForm">
-        <label for="name">Name</label>
+
+    <!-- Profile Form with hCaptcha -->
+    <form id="profileForm" action="/submit" method="POST">
+        <label for="name">Name:</label>
         <input type="text" id="name" name="name" required><br><br>
-        
+
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" required><br><br>
-        
+
         <label for="interest">Interest:</label>
         <input type="text" id="interest" name="interest" required><br><br>
+
+        <!-- hCaptcha widget -->
+        <div class="h-captcha" data-sitekey="ES_e3f0c8d3a2504bb194a55cc5e483290c"></div><br><br>
 
         <button type="submit">Submit</button>
     </form>
 
+    <script src="https://hcaptcha.com/1/api.js" async defer></script>
+
     <script>
-        document.getElementById('profileForm').addEventListener('submit', async function(event) {
+        // Client-side form submission handling
+        document.getElementById('profileForm').addEventListener('submit', async function (event) {
             event.preventDefault();
+
+            // Collect form data
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
             const interest = document.getElementById('interest').value;
+            const hcaptchaResponse = document.querySelector('textarea[name="h-captcha-response"]').value;
 
+            // Send form data to the backend with hCaptcha response
             const response = await fetch('/api/profile', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email, interest })
+                body: JSON.stringify({ name, email, interest, hcaptchaResponse })
             });
 
             const result = await response.json();
             alert(result.message);
         });
     </script>
-    <div > 
+
+    <div>
         <picture>
-            <img src="https://kreativhomokkep.hu/wp-content/uploads/alva-maci-600-szines.jpg" alt="Flowers" >
+            <img src="https://kreativhomokkep.hu/wp-content/uploads/alva-maci-600-szines.jpg" alt="Flowers">
         </picture>
     </div>
 </body>
+
 </html>

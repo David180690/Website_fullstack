@@ -3,8 +3,8 @@ version: '3.3'
 services:
   app:
     build:
-      context: ./frontend  # Set context to 'frontend' directory
-      dockerfile: Dockerfile  # No need to change the file path since we're already in the 'frontend' folder
+      context: .  # Set context to the current directory (backend)
+      dockerfile: Dockerfile  # Dockerfile is in the backend folder
     ports:
       - "5000:5000"
     networks:
@@ -14,4 +14,3 @@ services:
 networks:
   shared_network:
     external: true  # Use external network
-
