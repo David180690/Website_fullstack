@@ -6,9 +6,66 @@
     import Football from "./Football.svelte";
     import Others from "./Others.svelte";
     import NavBar from "./NavBar.svelte";
-    import WelcomePage from "./WelcomePage.svelte"; // Assuming Welcome is the default page when the app loads
+    import WelcomePage from "./WelcomePage.svelte";
 
-    let activePage = "WelcomePage"; // Set default active page to 'Welcome'
+    let activePage = "WelcomePage"; // Default active page
+    let token = null; // Store the token
+    let isLoggedIn = false; // Track login status
+    let tokenStatusMessage = ""; // Message to show token status
+
+    let message = "";
+    import { navigate } from "svelte-routing"; // Or use your preferred routing method
+
+
+    async function checkToken() {
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+            message = "No token found";
+            tokenStatusMessage = "You are not logged in.";
+            isLoggedIn = false;
+            return;
+        }
+
+        const response = await fetch(
+            "http://localhost:5000/api/validate-token",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            },
+        );
+
+        if (!response.ok) {
+            console.error(`Error validating token: ${response.statusText}`);
+            message = "Token validation failed";
+            tokenStatusMessage = "Token validation failed.";
+            isLoggedIn = false;
+            return;
+        }
+
+        const text = await response.text();
+        console.log("Response text:", text);
+
+        if (text) {
+            try {
+                const data = JSON.parse(text);
+                console.log("Token is valid:", data);
+                message = "Token is valid";
+                tokenStatusMessage = `Logged in as ${data.user.username}`;
+                isLoggedIn = true; // Set the login status to true
+            } catch (err) {
+                console.error("Error parsing response as JSON:", err);
+            }
+        } else {
+            console.error("Empty response body");
+        }
+    }
+
+    onMount(() => {
+        checkToken();
+    });
 
     function setPage(page) {
         activePage = page;
@@ -18,6 +75,12 @@
 <NavBar {activePage} {setPage} />
 
 <main>
+    <!-- Display token status -->
+    <div class="token-status">
+        <p>{isLoggedIn ? "You are logged in." : "You are not logged in."}</p>
+        <p>{tokenStatusMessage}</p>
+    </div>
+
     <!-- Main content section -->
     <div class="content-container">
         {#if activePage === "WelcomePage"}
@@ -39,7 +102,7 @@
         margin: 0;
         padding: 0;
         box-sizing: border-box;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     }
 
     body {
@@ -66,17 +129,12 @@
         transition: all 0.3s ease;
     }
 
-    
     /* Style for NavBar */
-   
-   
 
     /* Add responsiveness */
     @media (max-width: 768px) {
         .content-container {
             width: 90%;
         }
-
-       
     }
 </style>

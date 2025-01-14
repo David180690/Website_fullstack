@@ -7,7 +7,6 @@
     let searchText = "";
     let searchOrigin = "";
 
-    // Form fields for adding a new beer
     let newBeer = {
         name: "",
         type: "",
@@ -17,7 +16,6 @@
         image: "",
     };
 
-    // Error handling
     let formErrors = {
         name: "",
         type: "",
@@ -27,22 +25,38 @@
         image: "",
     };
 
-    // Control visibility of the add-beer form
     let showAddBeerForm = false;
 
+    const token = localStorage.getItem("authToken") || "";
+
+    const isValidToken = () => {
+        return token && token.length > 0;
+    };
     const fetchBeers = async () => {
         try {
-            const response = await fetch("http://localhost:5000/api/beers");
-            const result = await response.json();
+            const response = await fetch("http://localhost:5000/api/beers", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
             if (response.ok) {
+                const result = await response.json();
                 beers = result;
                 filteredBeers = beers;
                 countries = [...new Set(beers.map((beer) => beer.origin))];
             } else {
-                alert("Failed to fetch beers.");
+                const result = await response.json();
+                console.error("Error fetching beers:", result);
+                alert(
+                    `Failed to fetch beers. Error: ${result.message || "Unknown error"}`,
+                );
             }
         } catch (error) {
-            alert("Error fetching beers.");
+            console.error("Error fetching beers:", error);
+            alert(
+                "Error fetching beers. Please check the console for details.",
+            );
         }
     };
 
@@ -50,7 +64,7 @@
         filteredBeers = beers.filter(
             (beer) =>
                 beer.name.toLowerCase().includes(searchText.toLowerCase()) &&
-                (!searchOrigin || beer.origin === searchOrigin)
+                (!searchOrigin || beer.origin === searchOrigin),
         );
     };
 
@@ -64,7 +78,8 @@
         let isValid = true;
         for (let key in newBeer) {
             if (!newBeer[key]) {
-                formErrors[key] = `The ${key} field cannot be empty. Your beer glass should be full!`;
+                formErrors[key] =
+                    `The ${key} field cannot be empty. Your beer glass should be full!`;
                 isValid = false;
             } else {
                 formErrors[key] = "";
@@ -74,6 +89,11 @@
     };
 
     const addBeer = async () => {
+        if (!isValidToken()) {
+            alert("You must be logged in to add a beer.");
+            return;
+        }
+
         if (!validateForm()) {
             return;
         }
@@ -83,57 +103,84 @@
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify(newBeer),
             });
 
-            const result = await response.json();
-
             if (response.ok) {
+                const beer = await response.json();
                 alert("Beer added successfully!");
-                beers.push(result.beer);
-                filteredBeers = beers;
+                newBeer = {
+                    name: "",
+                    type: "",
+                    alcoholContent: "",
+                    origin: "",
+                    comment: "",
+                    image: "",
+                };
+                fetchBeers();
+                showAddBeerForm = false;
             } else {
-                alert(result.message || "Failed to add beer.");
+                const result = await response.json();
+                alert(
+                    `Failed to add beer. Error: ${result.message || "Unknown error"}`,
+                );
             }
         } catch (error) {
             console.error("Error adding beer:", error);
-            alert("Error adding beer.");
-        } finally {
-            // Reset form and hide it after submission
-            showAddBeerForm = false;
-            newBeer = {
-                name: "",
-                type: "",
-                alcoholContent: "",
-                origin: "",
-                comment: "",
-                image: "",
-            };
+            alert("Error adding beer. Please check the console for details.");
         }
     };
 
-    const deleteBeer = async (beerId) => {
+    const deleteBeer = async (id) => {
+        if (!isValidToken()) {
+            alert("You must be logged in to delete a beer.");
+            return;
+        }
+
+        const confirmDelete = window.confirm(
+            "Are you sure you want to delete this beer?",
+        );
+        if (!confirmDelete) {
+            return;
+        }
+
         try {
-            const response = await fetch(`http://localhost:5000/api/beers/${beerId}`, {
-                method: "DELETE",
-            });
+            const response = await fetch(
+                `http://localhost:5000/api/beers/${id}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                },
+            );
 
             if (response.ok) {
                 alert("Beer deleted successfully!");
-                beers = beers.filter((beer) => beer._id !== beerId); // Remove the deleted beer from the list
-                filteredBeers = beers;
+                fetchBeers();
             } else {
-                alert("Failed to delete beer.");
+                const result = await response.json();
+                alert(
+                    `Failed to delete beer. Error: ${result.message || "Unknown error"}`,
+                );
             }
         } catch (error) {
             console.error("Error deleting beer:", error);
-            alert("Error deleting beer.");
+            alert("Error deleting beer. Please check the console for details.");
         }
     };
 
-    onMount(fetchBeers);
+    onMount(() => {
+        if (isValidToken()) {
+            fetchBeers();
+        }
+    });
 </script>
+
+<!-- Your Svelte HTML -->
+<!-- Your existing HTML template -->
 
 <!-- Add Beer Button -->
 <div class="add-beer-section">
@@ -152,8 +199,14 @@
         <input type="text" placeholder="Type" bind:value={newBeer.type} />
         {#if formErrors.type}<p class="error">{formErrors.type}</p>{/if}
 
-        <input type="number" placeholder="Alcohol Content (%)" bind:value={newBeer.alcoholContent} />
-        {#if formErrors.alcoholContent}<p class="error">{formErrors.alcoholContent}</p>{/if}
+        <input
+            type="number"
+            placeholder="Alcohol Content (%)"
+            bind:value={newBeer.alcoholContent}
+        />
+        {#if formErrors.alcoholContent}<p class="error">
+                {formErrors.alcoholContent}
+            </p>{/if}
 
         <input type="text" placeholder="Origin" bind:value={newBeer.origin} />
         {#if formErrors.origin}<p class="error">{formErrors.origin}</p>{/if}
@@ -193,17 +246,26 @@
             {#each filteredBeers as beer}
                 <div class="beer-card">
                     {#if beer.image}
-                        <img src={beer.image} alt={beer.name} class="beer-image" />
+                        <img
+                            src={beer.image}
+                            alt={beer.name}
+                            class="beer-image"
+                        />
                     {:else}
                         <div class="beer-placeholder">No image</div>
                     {/if}
                     <div class="beer-info">
                         <h3>{beer.name} ({beer.type})</h3>
-                        <p><strong>Alcohol Content:</strong> {beer.alcoholContent}%</p>
+                        <p>
+                            <strong>Alcohol Content:</strong>
+                            {beer.alcoholContent}%
+                        </p>
                         <p><strong>Origin:</strong> {beer.origin}</p>
                         <p><strong>Comment:</strong> {beer.comment}</p>
                     </div>
-                    <button on:click={() => deleteBeer(beer._id)}>Delete</button> <!-- Delete button for each beer -->
+                    <button on:click={() => deleteBeer(beer._id)}>Delete</button
+                    >
+                    <!-- Delete button for each beer -->
                 </div>
             {/each}
         </div>
@@ -253,7 +315,7 @@
     }
 
     .add-beer-form button {
-        background-color: #4CAF50;
+        background-color: #4caf50;
         color: white;
         border: none;
         cursor: pointer;
@@ -266,7 +328,7 @@
 
     .beer-grid {
         display: grid;
-        grid-template-columns: repeat(3,1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: 20px;
         justify-content: center;
         margin-top: 20px;
