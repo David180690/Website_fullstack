@@ -1,6 +1,6 @@
 <script>
     export let setPage;
-    let activePage = 'WelcomePage'; // Track the active page
+    export let activePage = 'WelcomePage'; // Track the active page
 
     const handlePageChange = (page) => {
         activePage = page;

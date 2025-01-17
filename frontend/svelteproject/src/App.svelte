@@ -1,22 +1,20 @@
 <script>
     import { onMount } from "svelte";
-
     import BeerManager from "./BeerManager.svelte";
     import JokeGenerator from "./JokeGenerator.svelte";
     import Football from "./Football.svelte";
     import Others from "./Others.svelte";
     import NavBar from "./NavBar.svelte";
     import WelcomePage from "./WelcomePage.svelte";
+    import { navigate } from "svelte-routing"; // Or use your preferred routing method
 
     let activePage = "WelcomePage"; // Default active page
     let token = null; // Store the token
     let isLoggedIn = false; // Track login status
     let tokenStatusMessage = ""; // Message to show token status
-
     let message = "";
-    import { navigate } from "svelte-routing"; // Or use your preferred routing method
 
-
+    // Check if the token is valid
     async function checkToken() {
         const token = localStorage.getItem("authToken");
         if (!token) {
@@ -63,10 +61,26 @@
         }
     }
 
+    // Logout function
+    const logout = () => {
+        // Remove token from localStorage
+        localStorage.removeItem("authToken");
+
+        // Update UI state
+        isLoggedIn = false;
+        tokenStatusMessage = "You are logged out.";
+        message = "You have been logged out.";
+
+        // Navigate to the homepage (root of the app)
+        navigate("/"); // This will navigate to http://localhost:5555
+        window.location.reload();
+    };
+
     onMount(() => {
         checkToken();
     });
 
+    // Function to set the active page
     function setPage(page) {
         activePage = page;
     }
@@ -80,6 +94,11 @@
         <p>{isLoggedIn ? "You are logged in." : "You are not logged in."}</p>
         <p>{tokenStatusMessage}</p>
     </div>
+
+    <!-- Logout button (only shows when logged in) -->
+    {#if isLoggedIn}
+        <button on:click={logout}>Logout</button>
+    {/if}
 
     <!-- Main content section -->
     <div class="content-container">
@@ -136,5 +155,19 @@
         .content-container {
             width: 90%;
         }
+    }
+
+    button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #ff6347;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #ff4500;
     }
 </style>
