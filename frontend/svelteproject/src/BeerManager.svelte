@@ -217,6 +217,8 @@
         <input type="text" placeholder="Image URL" bind:value={newBeer.image} />
         {#if formErrors.image}<p class="error">{formErrors.image}</p>{/if}
 
+        
+
         <button on:click={addBeer}>Submit</button>
     </div>
 {/if}
@@ -262,6 +264,7 @@
                         </p>
                         <p><strong>Origin:</strong> {beer.origin}</p>
                         <p><strong>Comment:</strong> {beer.comment}</p>
+                        <p><strong>who added:</strong> {beer.username}</p>
                     </div>
                     <button on:click={() => deleteBeer(beer._id)}>Delete</button
                     >

@@ -8,7 +8,6 @@ const frontendServer = require('./routes/frontendServer'); // Import frontend se
 const beerRoutes = require('./routes/beerRoute');  // Import the beer route file
 const userRoutes = require('./routes/userRoute');  // Import the user route file
 const app = express();
-
 require('dotenv').config();  // Load .env variables
 
 
