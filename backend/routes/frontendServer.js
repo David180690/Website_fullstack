@@ -4,7 +4,7 @@ const path = require('path');
 const router = express.Router(); // Use router instead of app
 
 // Middleware to serve static files from the 'frontend/public' directory
-router.use(express.static(path.join(__dirname, '../frontend/public')));
+router.use(express.static(path.join(__dirname, '../../frontend/public')));
 
 // Serve the index.html for the root route
 router.get('/', (req, res) => {
