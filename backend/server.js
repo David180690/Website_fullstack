@@ -5,7 +5,7 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs'); // For password hashing
 const jwt = require('jsonwebtoken'); // For token-based authentication
 require('dotenv').config();
-
+const frontendServer = require('./frontendServer'); // Import frontend server logic
 const app = express();
 
 // Enable CORS
@@ -13,6 +13,10 @@ app.use(cors());
 
 // Middleware to parse JSON bodies
 app.use(express.json());
+
+
+app.use('/', frontendServer);  // Integrate frontend server routes
+
 
 // Connect to MongoDB (single connection for both user and beer databases)
 mongoose.connect('mongodb://localhost:27017/beer_database', {});
@@ -39,8 +43,6 @@ const beerSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema);
 const Beer = mongoose.model('Beer', beerSchema);
 
-// Middleware to serve static files from the 'frontend/public' directory
-app.use(express.static(path.join(__dirname, '../frontend/public')));
 
 // Authentication Middleware
 const authenticateToken = (req, res, next) => {
@@ -55,10 +57,7 @@ const authenticateToken = (req, res, next) => {
 };
 
 
-// Serve the index.html for the root route
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/public', 'index.html'));
-});
+
 
 // Register route
 app.post('/register', async (req, res) => {
