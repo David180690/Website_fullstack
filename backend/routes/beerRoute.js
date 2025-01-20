@@ -20,7 +20,7 @@ router.get('/api/beers', authenticateToken, async (req, res) => {
 // Protected API route to add a beer
 router.post('/api/beers', authenticateToken, async (req, res) => {
     try {
-        const { name, type, alcoholContent, origin, comment, image } = req.body;
+        const { name, type, alcoholContent, origin, comment, image ,url} = req.body;
 
         // Create a new beer, associating it with the logged-in user (via req.user._id)
         const beer = new Beer({
@@ -30,6 +30,7 @@ router.post('/api/beers', authenticateToken, async (req, res) => {
             origin,
             comment,
             image,
+            url,
             userId: req.user.userId,  // Set the userId from the decoded token
             username: req.user.username, // Set the username from the decoded token
         });

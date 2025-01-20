@@ -8,6 +8,7 @@ const beerSchema = new mongoose.Schema({
     origin: { type: String, required: true },
     comment: { type: String, required: true },
     image: { type: String }, // Optional field for beer image
+    url: { type: String }, // Optional field for beer URL
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Reference to User model
     username: { type: String, required: true } // Store the username of the user who added the beer
 });
