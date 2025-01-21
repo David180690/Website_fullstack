@@ -7,6 +7,7 @@
     import NavBar from "./NavBar.svelte";
     import WelcomePage from "./WelcomePage.svelte";
     import { navigate } from "svelte-routing"; // Or use your preferred routing method
+    import UploadFile from "./UploadFile.svelte";
 
     let activePage = "WelcomePage"; // Default active page
     let token = null; // Store the token
@@ -110,6 +111,8 @@
             <JokeGenerator />
         {:else if activePage === "Football"}
             <Football />
+        {:else if activePage === "UploadFile"}
+            <UploadFile />
         {:else if activePage === "Others"}
             <Others />
         {/if}
@@ -122,11 +125,6 @@
         padding: 0;
         box-sizing: border-box;
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    body {
-        background-color: #f4f4f9;
-        color: #333;
     }
 
     main {

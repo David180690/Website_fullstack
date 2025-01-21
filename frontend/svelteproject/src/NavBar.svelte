@@ -1,6 +1,6 @@
 <script>
     export let setPage;
-    export let activePage = 'WelcomePage'; // Track the active page
+    export let activePage = "WelcomePage"; // Track the active page
 
     const handlePageChange = (page) => {
         activePage = page;
@@ -9,35 +9,41 @@
 </script>
 
 <nav>
-    <button 
-        on:click={() => handlePageChange('WelcomePage')}
-        class:active={activePage === 'WelcomePage'}
+    <button
+        on:click={() => handlePageChange("WelcomePage")}
+        class:active={activePage === "WelcomePage"}
     >
         WelcomePage
     </button>
-    <button 
-        on:click={() => handlePageChange('BeerManager')}
-        class:active={activePage === 'BeerManager'}
+    <button
+        on:click={() => handlePageChange("BeerManager")}
+        class:active={activePage === "BeerManager"}
     >
         Beer Selection
     </button>
-    <button 
-        on:click={() => handlePageChange('JokeGenerator')}
-        class:active={activePage === 'JokeGenerator'}
+    <button
+        on:click={() => handlePageChange("JokeGenerator")}
+        class:active={activePage === "JokeGenerator"}
     >
         Jokes
     </button>
-    <button 
-        on:click={() => handlePageChange('Football')}
-        class:active={activePage === 'Football'}
+    <button
+        on:click={() => handlePageChange("Football")}
+        class:active={activePage === "Football"}
     >
         Football
     </button>
-    <button 
-        on:click={() => handlePageChange('Others')}
-        class:active={activePage === 'Others'}
+    <button
+        on:click={() => handlePageChange("Others")}
+        class:active={activePage === "Others"}
     >
         Others
+    </button>
+    <button
+        on:click={() => handlePageChange("UploadFile")}
+        class:active={activePage === "UploadFile"}
+    >
+        Upload File
     </button>
 </nav>
 
