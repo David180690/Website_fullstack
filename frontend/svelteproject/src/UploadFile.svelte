@@ -1,9 +1,9 @@
 <script>
-    export let name = '';
+    export let name = "";
     export let file = null;
     let uploadedFiles = [];
     let loading = false; // To manage loading state
-    let errorMessage = ''; // To display any error message
+    let errorMessage = ""; // To display any error message
 
     const handleFileChange = (event) => {
         file = event.target.files[0];
@@ -11,49 +11,55 @@
 
     const uploadFile = async () => {
         if (!name || !file) {
-            alert('Please provide a name and select a file!');
+            alert("Please provide a name and select a file!");
             return;
         }
 
         const formData = new FormData();
-        formData.append('name', name);
-        formData.append('file', file);
+        formData.append("name", name);
+        formData.append("file", file);
 
         try {
-            const response = await fetch('http://localhost:5001/upload', {
-                method: 'POST',
+            const response = await fetch("http://localhost:5001/upload", {
+                method: "POST",
                 body: formData,
             });
 
             if (!response.ok) {
-                throw new Error('Failed to upload file');
+                throw new Error("Failed to upload file");
             }
 
             const data = await response.json();
-            alert('File uploaded successfully!');
+            alert("File uploaded successfully!");
             console.log(data);
             fetchUploadedFiles(); // Fetch the updated list of uploaded files
         } catch (error) {
             console.error(error);
-            alert('Failed to upload the file.');
+            alert("Failed to upload the file.");
         }
     };
 
     const fetchUploadedFiles = async () => {
-        loading = true;  // Show loading state
-        errorMessage = ''; // Clear previous errors
+        loading = true; // Show loading state
+        errorMessage = ""; // Clear previous errors
 
         try {
-            const response = await fetch('http://localhost:5001/files');
+            const response = await fetch("http://localhost:5001/files");
             if (!response.ok) {
-                throw new Error('Failed to fetch files');
+                throw new Error("Failed to fetch files");
             }
 
             const data = await response.json();
-            uploadedFiles = data; // Update the uploaded files list
+
+            // Adjust the data to include the file name and uploadedBy
+            uploadedFiles = data.map((file) => ({
+                filename: file.filename,
+                uploadedBy: file.metadata?.uploadedBy,
+                uploadDate: new Date(file.uploadDate).toLocaleString(),
+            }));
         } catch (error) {
             console.error(error);
-            errorMessage = 'Error fetching files. Please try again later.'; // Display error message
+            errorMessage = "Error fetching files. Please try again later."; // Display error message
         } finally {
             loading = false; // Hide loading state
         }
@@ -80,10 +86,15 @@
                 <li>
                     <strong>{file.filename}</strong>
                     <br />
-                    <small>Uploaded on: {new Date(file.uploadDate).toLocaleString()}</small>
+                    <small>Uploaded by: {file.uploadedBy}</small>
                     <br />
-                    <!-- Display the image -->
-                    <img src={`http://localhost:5001/files/${file.filename}`} alt={file.filename} width="200" />
+                    <small>Uploaded on: {file.uploadDate}</small>
+                    <br />
+                    <img
+                        src={`http://localhost:5001/files/${file.filename}`}
+                        alt={file.filename}
+                        width="200"
+                    />
                 </li>
             {/each}
         </ul>
