@@ -4,6 +4,7 @@
     let remainingAttempts = 6;
     let status = "playing";
     let letter = "";
+    let inputElement;
 
     async function startGame() {
         const response = await fetch("http://localhost:4000/start", {
@@ -11,9 +12,10 @@
         });
         const data = await response.json();
         gameId = data.game_id;
-        guessedWord = "_".repeat(data.word_length);  // Initialize guessed word
+        guessedWord = "_".repeat(data.word_length); // Initialize guessed word
         remainingAttempts = 6;
         status = "playing";
+        focusInput();
     }
 
     async function guessLetter() {
@@ -39,6 +41,13 @@
         remainingAttempts = data.remaining_attempts;
         status = data.status;
         letter = "";
+        focusInput();
+    }
+
+    function focusInput() {
+        if (inputElement) {
+            inputElement.focus();
+        }
     }
 </script>
 
@@ -51,7 +60,13 @@
         <p>Status: {status}</p>
 
         {#if status === "playing"}
-            <input type="text" bind:value={letter} maxlength="1" />
+            <input
+                type="text"
+                bind:value={letter}
+                maxlength="1"
+                bind:this={inputElement}
+                on:input={() => focusInput()}
+            />
             <button on:click={guessLetter}>Guess</button>
         {/if}
 
@@ -64,11 +79,67 @@
 <style>
     div {
         text-align: center;
-        font-family: Arial, sans-serif;
+        font-family: 'Poppins', sans-serif;
+        max-width: 500px;
+        margin: 50px auto;
+        padding: 20px;
+        border: 2px solid #f0f0f0;
+        border-radius: 10px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        background-color: #f9f9f9;
     }
+
+    p {
+        font-size: 18px;
+        margin: 10px 0;
+        color: #333;
+    }
+
     button {
         margin: 10px;
+        padding: 12px 20px;
+        font-size: 16px;
+        font-weight: 600;
+        color: white;
+        background: linear-gradient(90deg, #ff6a00, #ee0979);
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(255, 106, 0, 0.2);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 14px rgba(255, 106, 0, 0.3);
+    }
+
+    input {
+        margin: 10px 0;
         padding: 10px;
         font-size: 16px;
+        width: 80%;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        outline: none;
+        transition: border-color 0.3s ease;
+    }
+
+    input:focus {
+        border-color: #ff6a00;
+    }
+
+    .status-playing {
+        color: #007bff;
+    }
+
+    .status-won {
+        color: #28a745;
+        font-weight: bold;
+    }
+
+    .status-lost {
+        color: #dc3545;
+        font-weight: bold;
     }
 </style>

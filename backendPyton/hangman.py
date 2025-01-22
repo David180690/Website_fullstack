@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS  # Corrected import
+from flask_cors import CORS
 import random
 import logging
 
@@ -12,11 +12,31 @@ logging.basicConfig(level=logging.DEBUG)
 # Game storage
 games = {}
 
+# Load word list from the file
+def load_word_list(file_path):
+    try:
+        with open(file_path, "r", encoding="utf-8") as file:
+            words = [line.strip() for line in file if line.strip()]  # Remove empty lines
+            logging.info(f"Loaded {len(words)} words from {file_path}")
+            return words
+    except FileNotFoundError:
+        logging.error(f"Word list file not found: {file_path}")
+        return []
+    except Exception as e:
+        logging.error(f"Error loading word list: {e}")
+        return []
+
+# Initialize the word list
+WORD_LIST = load_word_list("./szavak.txt")  # Correct path to the file
+
 # Helper functions
 def initialize_game():
-    word_list = ["python", "flask", "svelte", "frontend", "backend"]
-    word = random.choice(word_list)
-    logging.debug(f"Initializing game with word: {word}")  # Log the word
+    if not WORD_LIST:
+        logging.error("Word list is empty. Cannot start a game.")
+        return {"error": "Word list is empty. Contact the administrator."}
+    
+    word = random.choice(WORD_LIST)
+    logging.debug(f"Initializing game with word: {word}")  # Log the chosen word
     return {
         "word": word,
         "guessed_letters": [],
@@ -64,7 +84,11 @@ def make_guess(game, letter):
 @app.route("/start", methods=["POST"])
 def start_game():
     game_id = len(games) + 1
-    games[game_id] = initialize_game()
+    game_data = initialize_game()
+    if "error" in game_data:
+        return jsonify(game_data), 500  # Return an error if word list is empty
+    
+    games[game_id] = game_data
     logging.info(f"Started new game with ID: {game_id}")
     return jsonify({"game_id": game_id, "word_length": len(games[game_id]["word"])})
 
