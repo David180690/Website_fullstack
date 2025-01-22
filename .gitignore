@@ -104,3 +104,14 @@ venv/
 env/
 *.env
 
+# Python environment and bytecode files
+.env
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+my-project-env/
+
+# Requirements files
+requirements.txt
