@@ -55,7 +55,8 @@
     {#if !gameId}
         <button on:click={startGame}>Start Game</button>
     {:else}
-        <p>Word: {guessedWord}</p>
+        <p><strong>Word:</strong> <span class="word">{guessedWord}</span></p>
+
         <p>Remaining Attempts: {remainingAttempts}</p>
         <p>Status: {status}</p>
 
@@ -79,7 +80,7 @@
 <style>
     div {
         text-align: center;
-        font-family: 'Poppins', sans-serif;
+        font-family: "Poppins", sans-serif;
         max-width: 500px;
         margin: 50px auto;
         padding: 20px;
@@ -106,7 +107,9 @@
         border-radius: 25px;
         cursor: pointer;
         box-shadow: 0 4px 10px rgba(255, 106, 0, 0.2);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
     }
 
     button:hover {
@@ -142,4 +145,11 @@
         color: #dc3545;
         font-weight: bold;
     }
+    .word {
+    font-family: "Courier New", Courier, monospace; /* Monospace for consistent spacing */
+    letter-spacing: 0.3em; /* Add spacing between underscores */
+    font-size: 20px; /* Make it larger for visibility */
+    display: inline-block; /* Ensures consistent layout */
+}
+
 </style>
