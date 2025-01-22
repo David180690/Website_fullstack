@@ -6,102 +6,100 @@
     import Others from "./Others.svelte";
     import NavBar from "./NavBar.svelte";
     import WelcomePage from "./WelcomePage.svelte";
-    import { navigate } from "svelte-routing"; // Or use your preferred routing method
+    import { navigate } from "svelte-routing";
     import UploadFile from "./UploadFile.svelte";
+    import BeerCupManager from "./BeerCupManager.svelte";
+    import Hangman from "./Hangman.svelte";
 
     let activePage = "WelcomePage"; // Default active page
-    let token = null; // Store the token
-    let isLoggedIn = false; // Track login status
-    let tokenStatusMessage = ""; // Message to show token status
+    let token = localStorage.getItem("authToken");
+    let isLoggedIn = false;
+    let tokenStatusMessage = "";
     let message = "";
 
-    // Check if the token is valid
+    // Reactive token status
+    $: checkToken();
+
     async function checkToken() {
-        const token = localStorage.getItem("authToken");
         if (!token) {
-            message = "No token found";
             tokenStatusMessage = "You are not logged in.";
             isLoggedIn = false;
             return;
         }
 
-        const response = await fetch(
-            "http://localhost:5000/api/validate-token",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
+        try {
+            const response = await fetch(
+                "http://localhost:5000/api/validate-token",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
                 },
-            },
-        );
+            );
 
-        if (!response.ok) {
-            console.error(`Error validating token: ${response.statusText}`);
-            message = "Token validation failed";
-            tokenStatusMessage = "Token validation failed.";
-            isLoggedIn = false;
-            return;
-        }
-
-        const text = await response.text();
-        console.log("Response text:", text);
-
-        if (text) {
-            try {
-                const data = JSON.parse(text);
-                console.log("Token is valid:", data);
-                message = "Token is valid";
+            if (response.ok) {
+                const data = await response.json();
                 tokenStatusMessage = `Logged in as ${data.user.username}`;
-                isLoggedIn = true; // Set the login status to true
-            } catch (err) {
-                console.error("Error parsing response as JSON:", err);
+                isLoggedIn = true;
+            } else {
+                tokenStatusMessage = "Token validation failed.";
+                isLoggedIn = false;
             }
-        } else {
-            console.error("Empty response body");
+        } catch (error) {
+            console.error("Error validating token:", error);
+            tokenStatusMessage = "Error validating token.";
+            isLoggedIn = false;
         }
     }
 
-    // Logout function
     const logout = () => {
-        // Remove token from localStorage
         localStorage.removeItem("authToken");
-
-        // Update UI state
+        token = null; // Reassign token
         isLoggedIn = false;
         tokenStatusMessage = "You are logged out.";
-        message = "You have been logged out.";
-
-        // Navigate to the homepage (root of the app)
-        navigate("/"); // This will navigate to http://localhost:5555
-        window.location.reload();
+        navigate("/"); // Redirect to home
+        activePage = "WelcomePage"; // Reset to welcome page
     };
 
-    onMount(() => {
-        checkToken();
-    });
-
-    // Function to set the active page
     function setPage(page) {
-        activePage = page;
+        activePage = page; // Update active page
     }
+
+    onMount(() => {
+        // Initial token check
+        checkToken();
+
+        // Listen for storage changes
+        window.addEventListener("storage", (event) => {
+            if (event.key === "authToken") {
+                token = localStorage.getItem("authToken");
+            }
+        });
+
+        return () => {
+            window.removeEventListener("storage", () => {});
+        };
+    });
 </script>
 
+<!-- Navigation bar -->
 <NavBar {activePage} {setPage} />
 
 <main>
-    <!-- Display token status -->
+    <!-- Token status -->
     <div class="token-status">
         <p>{isLoggedIn ? "You are logged in." : "You are not logged in."}</p>
         <p>{tokenStatusMessage}</p>
     </div>
 
-    <!-- Logout button (only shows when logged in) -->
+    <!-- Logout button -->
     {#if isLoggedIn}
         <button on:click={logout}>Logout</button>
     {/if}
 
-    <!-- Main content section -->
+    <!-- Render active page -->
     <div class="content-container">
         {#if activePage === "WelcomePage"}
             <WelcomePage />
@@ -111,10 +109,14 @@
             <JokeGenerator />
         {:else if activePage === "Football"}
             <Football />
+        {:else if activePage === "BeerCupManager"}
+            <BeerCupManager />
         {:else if activePage === "UploadFile"}
             <UploadFile />
         {:else if activePage === "Others"}
             <Others />
+        {:else if activePage === "Hangman"}
+            <Hangman />
         {/if}
     </div>
 </main>

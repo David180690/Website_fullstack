@@ -40,6 +40,19 @@
         Others
     </button>
     <button
+        on:click={() => handlePageChange("BeerCupManager")}
+        class:active={activePage === "BeerCupManager"}
+    >
+        Beer Cup Manager
+    </button>
+    <button
+        on:click={() => handlePageChange("Hangman")}
+        class:active={activePage === "Hangman"}
+    >
+        Hangman
+    </button>
+
+    <button
         on:click={() => handlePageChange("UploadFile")}
         class:active={activePage === "UploadFile"}
     >
