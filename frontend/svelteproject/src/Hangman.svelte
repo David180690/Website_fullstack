@@ -5,6 +5,7 @@
     let status = "playing";
     let letter = "";
     let inputElement;
+    let correctWord = ""; // New variable to store the correct word on loss
 
     async function startGame() {
         const response = await fetch("http://localhost:4000/start", {
@@ -15,6 +16,7 @@
         guessedWord = "_".repeat(data.word_length); // Initialize guessed word
         remainingAttempts = 6;
         status = "playing";
+        correctWord = ""; // Reset correct word on game restart
         focusInput();
     }
 
@@ -40,6 +42,7 @@
         guessedWord = data.guessed_word;
         remainingAttempts = data.remaining_attempts;
         status = data.status;
+        correctWord = data.word; // Update correct word if game is lost
         letter = "";
         focusInput();
     }
@@ -60,6 +63,10 @@
         <p>Remaining Attempts: {remainingAttempts}</p>
         <p>Status: {status}</p>
 
+        {#if status === "lost"}
+            <p><strong>Correct Word:</strong> {correctWord}</p> <!-- Show correct word if lost -->
+        {/if}
+
         {#if status === "playing"}
             <input
                 type="text"
@@ -76,6 +83,7 @@
         {/if}
     {/if}
 </div>
+
 
 <style>
     div {

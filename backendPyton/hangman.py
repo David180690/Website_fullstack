@@ -47,11 +47,17 @@ def initialize_game():
 def make_guess(game, letter):
     if game["status"] != "playing":
         logging.warning(f"Game is already over. Status: {game['status']}")
-        return {"error": "Game is already over."}
+        return {
+            "error": "Game is already over.",
+            "word": game["word"],  # Include the correct word
+        }
 
     if letter in game["guessed_letters"]:
         logging.warning(f"Letter '{letter}' already guessed.")
-        return {"error": "Letter already guessed."}
+        return {
+            "error": "Letter already guessed.",
+            "word": game["word"],  # Include the correct word
+        }
 
     game["guessed_letters"].append(letter)
 
@@ -73,12 +79,13 @@ def make_guess(game, letter):
     logging.debug(f"Guessed word so far: {guessed_word}")
 
     return {
-        "word": game["word"],
+        "word": game["word"],  # Include the correct word in every response
         "guessed_letters": game["guessed_letters"],
         "remaining_attempts": game["remaining_attempts"],
         "status": game["status"],
         "guessed_word": guessed_word,
     }
+
 
 # Routes
 @app.route("/start", methods=["POST"])
