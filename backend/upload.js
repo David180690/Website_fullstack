@@ -12,8 +12,9 @@ app.use(cors());
 app.use(express.json());
 
 // MongoDB Connection
-const conn = mongoose.createConnection('mongodb://localhost:27017/gfstest', {
-
+const conn = mongoose.createConnection('mongodb://mongo:27017/gfstest', { // 'mongo' is the MongoDB service name in Docker Compose
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
 });
 
 let gridFSBucket;
@@ -95,7 +96,6 @@ app.get('/files', async (req, res) => {
     }
 });
 
-
 app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:5001`);
+    console.log(`Server running at http://127.0.0.1:5001`);
 });
