@@ -1,0 +1,15 @@
+# Dockerfile for the upload service
+FROM node:16
+
+WORKDIR /app
+
+# Copy the upload files
+COPY ./backend /app
+
+# Install dependencies
+RUN npm install
+
+# Expose the port
+EXPOSE 5001
+
+CMD ["node", "upload.js"]

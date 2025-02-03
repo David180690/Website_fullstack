@@ -29,7 +29,7 @@
 
         try {
             const response = await fetch(
-                "http://localhost:5000/api/validate-token",
+                "http://localhost/api/validate-token",
                 {
                     method: "POST",
                     headers: {

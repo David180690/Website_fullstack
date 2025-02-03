@@ -1,0 +1,75 @@
+version: '3.3'
+
+services:
+  frontend:
+    build:
+      context: ./  # Use the root context
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "5555:5555"
+    networks:
+      - WebsiteFullstackNetwork
+
+  server:
+    build:
+      context: ./  # Use the root context
+      dockerfile: Dockerfile.server
+    command: ["node", "server.js"]
+    ports:
+      - "5000:5000"  # Exposing the server on port 5000
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/WEB_DEMO  # MongoDB connection URI
+    networks:
+      - WebsiteFullstackNetwork
+    depends_on:
+      - mongo  # Ensure MongoDB starts before the server
+    restart: always  # Restart the server on failure or container stop
+
+  upload:
+    build:
+      context: ./  # Use the root context
+      dockerfile: Dockerfile.upload
+    command: ["node", "upload.js"]
+    ports:
+      - "5001:5001"  # Expose upload service on port 5001
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/WEB_DEMO  # MongoDB connection URI
+    networks:
+      - WebsiteFullstackNetwork
+    depends_on:
+      - mongo  # Ensure MongoDB starts before upload service
+    restart: always  # Restart the upload service on failure or container stop
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27018:27017"  # Expose MongoDB to the host machine
+    environment:
+      - MONGO_INITDB_DATABASE=WEB_DEMO
+    volumes:
+      - mongo_data:/data/db  # Persist MongoDB data
+    networks:
+      - WebsiteFullstackNetwork
+    restart: always  # Restart MongoDB on failure or container stop
+
+  python:
+    build:
+      context: ./  # Use the root context
+      dockerfile: Dockerfile.python
+    ports:
+      - "4000:4000"  # Expose Flask app on port 4000
+    environment:
+      - FLASK_APP=hangman.py  # Set the Flask app environment variable
+    networks:
+      - WebsiteFullstackNetwork
+    depends_on:
+      - mongo  # Ensure MongoDB starts before the Python backend
+    restart: always  # Restart the Python service on failure or container stop
+
+networks:
+  WebsiteFullstackNetwork:
+    driver: bridge
+
+volumes:
+  mongo_data:

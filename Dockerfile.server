@@ -1,0 +1,15 @@
+# Dockerfile for the backend server
+FROM node:16
+
+WORKDIR /app
+
+# Copy the server files
+COPY ./backend /app
+
+# Install dependencies
+RUN npm install
+
+# Expose the port
+EXPOSE 5000
+
+CMD ["node", "server.js"]

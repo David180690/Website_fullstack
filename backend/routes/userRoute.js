@@ -6,6 +6,9 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const User = require('../models/userModel');
 
+router.get('/login', (req, res) => {
+    res.json({ message: "Login endpoint is available. Use POST instead." });
+});
 
 // Register route
 router.post('/register', async (req, res) => {

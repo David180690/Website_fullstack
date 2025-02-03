@@ -1,0 +1,18 @@
+# Dockerfile for the frontend (Svelte project)
+FROM node:16
+
+WORKDIR /app
+
+# Copy the Svelte project files
+COPY ./frontend/svelteproject /app
+
+# Install dependencies
+RUN npm install
+
+# Build the Svelte project
+RUN npm run build
+
+# Expose the port
+EXPOSE 5555
+
+CMD ["npm", "run", "dev"]

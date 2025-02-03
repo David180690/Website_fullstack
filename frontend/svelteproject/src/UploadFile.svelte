@@ -20,7 +20,7 @@
         formData.append("file", file);
 
         try {
-            const response = await fetch("127.0.0.1:5001/upload", {
+            const response = await fetch("http://localhost:5001/upload", {
                 method: "POST",
                 body: formData,
             });
@@ -44,7 +44,7 @@
         errorMessage = ""; // Clear previous errors
 
         try {
-            const response = await fetch("127.0.0.1:5001/files");
+            const response = await fetch("http://localhost:5001/files");
             if (!response.ok) {
                 throw new Error("Failed to fetch files");
             }
@@ -91,7 +91,7 @@
                     <small>Uploaded on: {file.uploadDate}</small>
                     <br />
                     <img
-                        src={`127.0.0.1:5001/files/${file.filename}`}
+                        src={`http://localhost:5001/files/${file.filename}`}
                         alt={file.filename}
                         width="200"
                     />

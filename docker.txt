@@ -1,0 +1,13 @@
+.
+├── backend
+│   ├── server.js
+│   └── upload.js
+├── backendPython
+│   └── hangman.js
+├── frontend
+│   └── svelteproject
+├── Dockerfile.server
+├── Dockerfile.upload
+├── Dockerfile.frontend
+├── Dockerfile.python
+└── docker-compose.yml
