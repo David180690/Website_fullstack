@@ -1,0 +1,28 @@
+name: Deploy Fullstack Application
+
+on:
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  deploy:
+    runs-on: davidserver  # Use self-hosted runner (make sure 'davidserver' is registered)
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Create external network (WebsiteFullstackNetwork)
+        run: |
+          docker network create WebsiteFullstackNetwork || echo "Network already exists"
+          
+      - name: Build and Deploy with Docker Compose
+        run: |
+          # Run docker-compose in the root directory to build and deploy all services
+          docker-compose -f docker-compose.yml up -d --build
+
+      # Optionally, clean up after deployment
+      # - name: Clean up
+      #   run: docker-compose -f docker-compose.yml down

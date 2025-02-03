@@ -23,7 +23,7 @@ services:
       - WebsiteFullstackNetwork
     depends_on:
       - mongo  # Ensure MongoDB starts before the server
-    restart: always  # Restart the server on failure or container stop
+    restart: unless-stopped  # Restart the server on failure or container stop
 
   upload:
     build:
@@ -38,7 +38,7 @@ services:
       - WebsiteFullstackNetwork
     depends_on:
       - mongo  # Ensure MongoDB starts before upload service
-    restart: always  # Restart the upload service on failure or container stop
+    restart: unless-stopped  # Restart the upload service on failure or container stop
 
   mongo:
     image: mongo:latest
@@ -51,7 +51,7 @@ services:
       - mongo_data:/data/db  # Persist MongoDB data
     networks:
       - WebsiteFullstackNetwork
-    restart: always  # Restart MongoDB on failure or container stop
+    restart: unless-stopped  # Restart MongoDB on failure or container stop
 
   python:
     build:
@@ -65,7 +65,7 @@ services:
       - WebsiteFullstackNetwork
     depends_on:
       - mongo  # Ensure MongoDB starts before the Python backend
-    restart: always  # Restart the Python service on failure or container stop
+    restart: unless-stopped  # Restart the Python service on failure or container stop
 
 networks:
   WebsiteFullstackNetwork:
