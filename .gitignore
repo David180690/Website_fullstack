@@ -114,4 +114,4 @@ __pycache__/
 my-project-env/
 
 # Requirements files
-requirements.txt
+#requirements.txt

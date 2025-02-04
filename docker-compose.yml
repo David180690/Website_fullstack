@@ -9,7 +9,7 @@ services:
       - "5555:5555"
     networks:
       - WebsiteFullstackNetwork
-
+    restart: unless-stopped  # Restart the upload service on failure or container stop
   server:
     build:
       context: ./  # Use the root context
