@@ -17,6 +17,11 @@ jobs:
       - name: Create external network (WebsiteFullstackNetwork)
         run: |
           docker network create WebsiteFullstackNetwork || echo "Network already exists"
+
+      - name: Set up Environment Variables
+        run: |
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+          echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> .env
           
       - name: Build and Deploy with Docker Compose
         run: |

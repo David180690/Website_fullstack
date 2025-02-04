@@ -10,6 +10,16 @@ const userRoutes = require('./routes/userRoute');  // Import the user route file
 const app = express();
 require('dotenv').config();  // Load .env variables
 
+// Load environment variables
+const MONGO_URI = process.env.MONGO_URI;
+const JWT_SECRET = process.env.JWT_SECRET;
+const PORT = process.env.PORT || 5000;
+
+if (!MONGO_URI || !JWT_SECRET) {
+    console.error('Missing environment variables! Check deployment configuration.');
+    process.exit(1);
+}
+
 // Enable CORS
 app.use(cors());
 
@@ -32,7 +42,7 @@ db.on('connected', () => console.log('Connected to MongoDB'));
 db.on('error', (err) => console.error('MongoDB connection error:', err));
 
 // Start the server
-const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, () => {
     console.log(`Server is running on http://127.0.0.1:${PORT}`);
 });
