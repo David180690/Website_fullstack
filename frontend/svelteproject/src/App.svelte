@@ -17,7 +17,6 @@
     let tokenStatusMessage = "";
     let message = "";
 
-    // Pages mapping for dynamic rendering
     const pages = {
         "WelcomePage": WelcomePage,
         "BeerManager": BeerManager,
@@ -30,8 +29,7 @@
     };
 
     async function checkToken() {
-        token = localStorage.getItem("authToken"); // Get the token from localStorage
-        console.log("Token from localStorage:", token); // Debug token retrieval
+        token = localStorage.getItem("authToken");
 
         if (!token) {
             tokenStatusMessage = "You are not logged in.";
@@ -40,16 +38,13 @@
         }
 
         try {
-            const response = await fetch(
-                "http://localhost:5000/api/validate-token",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
+            const response = await fetch("http://localhost:5000/api/validate-token", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
                 },
-            );
+            });
 
             if (response.ok) {
                 const data = await response.json();
@@ -66,25 +61,41 @@
         }
     }
 
-    const logout = () => {
-        localStorage.removeItem("authToken");
-        token = null; // Reassign token
-        isLoggedIn = false;
-        tokenStatusMessage = "You are logged out.";
-        navigate("/"); // Redirect to home
-        activePage = "WelcomePage"; // Reset to welcome page
+    const logout = async () => {
+        try {
+            const response = await fetch("http://localhost:5000/logout", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                localStorage.removeItem("authToken");
+                token = null;
+                isLoggedIn = false;
+                tokenStatusMessage = "You are logged out.";
+                activePage = "WelcomePage";
+                navigate("/");
+            } else {
+                console.error("Logout failed:", await response.json());
+                tokenStatusMessage = "Logout failed. Please try again.";
+            }
+        } catch (error) {
+            console.error("Error during logout:", error);
+            tokenStatusMessage = "Error during logout.";
+        }
     };
 
     function setPage(page) {
-        activePage = page; // Update active page
+        activePage = page;
     }
 
     let storageListener;
     onMount(() => {
-        // Initial token check
         checkToken();
 
-        // Listen for storage changes
         storageListener = (event) => {
             if (event.key === "authToken") {
                 token = localStorage.getItem("authToken");
@@ -99,22 +110,18 @@
     });
 </script>
 
-<!-- Navigation bar -->
 <NavBar {activePage} {setPage} />
 
 <main>
-    <!-- Token status -->
     <div class="token-status">
         <p>{isLoggedIn ? "You are logged in." : "You are not logged in."}</p>
         <p>{tokenStatusMessage}</p>
     </div>
 
-    <!-- Logout button -->
     {#if isLoggedIn}
         <button on:click={logout}>Logout</button>
     {/if}
 
-    <!-- Render active page dynamically -->
     <div class="content-container">
         {#if pages[activePage]}
             <svelte:component this={pages[activePage]} />
@@ -149,15 +156,6 @@
         transition: all 0.3s ease;
     }
 
-    /* Style for NavBar */
-
-    /* Add responsiveness */
-    @media (max-width: 768px) {
-        .content-container {
-            width: 90%;
-        }
-    }
-
     button {
         margin-top: 20px;
         padding: 10px 20px;
@@ -170,5 +168,11 @@
 
     button:hover {
         background-color: #ff4500;
+    }
+
+    @media (max-width: 768px) {
+        .content-container {
+            width: 90%;
+        }
     }
 </style>

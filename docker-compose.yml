@@ -37,7 +37,8 @@ services:
     networks:
       - WebsiteFullstackNetwork
     depends_on:
-      - mongo  # Ensure MongoDB starts before upload service
+      - mongo
+      - redis  # Ensure MongoDB starts before upload service
     restart: unless-stopped  # Restart the upload service on failure or container stop
 
   mongo:
@@ -66,7 +67,13 @@ services:
     depends_on:
       - mongo  # Ensure MongoDB starts before the Python backend
     restart: unless-stopped  # Restart the Python service on failure or container stop
-
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6380:6379"  # Expose Redis port
+    networks:
+      - WebsiteFullstackNetwork
 networks:
   WebsiteFullstackNetwork:
     driver: bridge
