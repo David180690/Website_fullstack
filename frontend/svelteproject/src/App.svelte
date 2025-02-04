@@ -17,10 +17,22 @@
     let tokenStatusMessage = "";
     let message = "";
 
-    // Reactive token status
-    $: checkToken();
+    // Pages mapping for dynamic rendering
+    const pages = {
+        "WelcomePage": WelcomePage,
+        "BeerManager": BeerManager,
+        "JokeGenerator": JokeGenerator,
+        "Football": Football,
+        "BeerCupManager": BeerCupManager,
+        "UploadFile": UploadFile,
+        "Others": Others,
+        "Hangman": Hangman
+    };
 
     async function checkToken() {
+        token = localStorage.getItem("authToken"); // Get the token from localStorage
+        console.log("Token from localStorage:", token); // Debug token retrieval
+
         if (!token) {
             tokenStatusMessage = "You are not logged in.";
             isLoggedIn = false;
@@ -29,7 +41,7 @@
 
         try {
             const response = await fetch(
-                "http://localhost/api/validate-token",
+                "http://localhost:5000/api/validate-token",
                 {
                     method: "POST",
                     headers: {
@@ -67,19 +79,22 @@
         activePage = page; // Update active page
     }
 
+    let storageListener;
     onMount(() => {
         // Initial token check
         checkToken();
 
         // Listen for storage changes
-        window.addEventListener("storage", (event) => {
+        storageListener = (event) => {
             if (event.key === "authToken") {
                 token = localStorage.getItem("authToken");
             }
-        });
+        };
+
+        window.addEventListener("storage", storageListener);
 
         return () => {
-            window.removeEventListener("storage", () => {});
+            window.removeEventListener("storage", storageListener);
         };
     });
 </script>
@@ -99,24 +114,10 @@
         <button on:click={logout}>Logout</button>
     {/if}
 
-    <!-- Render active page -->
+    <!-- Render active page dynamically -->
     <div class="content-container">
-        {#if activePage === "WelcomePage"}
-            <WelcomePage />
-        {:else if activePage === "BeerManager"}
-            <BeerManager />
-        {:else if activePage === "JokeGenerator"}
-            <JokeGenerator />
-        {:else if activePage === "Football"}
-            <Football />
-        {:else if activePage === "BeerCupManager"}
-            <BeerCupManager />
-        {:else if activePage === "UploadFile"}
-            <UploadFile />
-        {:else if activePage === "Others"}
-            <Others />
-        {:else if activePage === "Hangman"}
-            <Hangman />
+        {#if pages[activePage]}
+            <svelte:component this={pages[activePage]} />
         {/if}
     </div>
 </main>

@@ -10,15 +10,15 @@ const userRoutes = require('./routes/userRoute');  // Import the user route file
 const app = express();
 require('dotenv').config();  // Load .env variables
 
-// Load environment variables
-const MONGO_URI = process.env.MONGO_URI;
-const JWT_SECRET = process.env.JWT_SECRET;
+// // Load environment variables
+// const MONGO_URI = process.env.MONGO_URI;
+// const JWT_SECRET = "westel900";
 const PORT = process.env.PORT || 5000;
 
-if (!MONGO_URI || !JWT_SECRET) {
-    console.error('Missing environment variables! Check deployment configuration.');
-    process.exit(1);
-}
+// if (!MONGO_URI || !JWT_SECRET) {
+//     console.error('Missing environment variables! Check deployment configuration.');
+//     process.exit(1);
+// }
 
 // Enable CORS
 app.use(cors());
