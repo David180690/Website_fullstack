@@ -115,3 +115,5 @@ my-project-env/
 
 # Requirements files
 #requirements.txt
+infra.yml
+kube.yml
