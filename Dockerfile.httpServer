@@ -1,0 +1,16 @@
+# Dockerfile for the backend server
+FROM node:latest
+
+WORKDIR /app
+
+# Copy the server files
+COPY ./backend /app
+
+# Install dependencies
+RUN npm install
+
+# Expose the port
+EXPOSE 8090
+
+CMD ["node", "httpServer.js"]
+

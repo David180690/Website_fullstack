@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: http-server-deployment
+  labels:
+    app: http-server
+spec:
+  replicas: 2  # You can change this to scale the application
+  selector:
+    matchLabels:
+      app: http-server
+  template:
+    metadata:
+      labels:
+        app: http-server
+    spec:
+      containers:
+      - name: http-server
+        image: david8bullet/http-server:20250207141442
+        ports:
+        - containerPort: 8090  # Change to match your app's internal port
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: http-server-service
+spec:
+  type: LoadBalancer   # This will expose the service to the external world
+  selector:
+    app: http-server
+  ports:
+    - protocol: TCP
+      port: 8080        # Port exposed to the outside world
+      targetPort: 8090  # Port inside the container
+
