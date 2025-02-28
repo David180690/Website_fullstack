@@ -1,4 +1,4 @@
-name: Deploy Fullstack Application
+name: Deploy Fullstack Application NAS
 
 on:
   workflow_dispatch:  # Allow manual trigger
